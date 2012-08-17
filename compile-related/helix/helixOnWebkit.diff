@@ -1,0 +1,123 @@
+diff --git a/nightly/client/core/hxplay.cpp b/nightly/client/core/hxplay.cpp
+index f98b0af..98afed8 100755
+--- a/nightly/client/core/hxplay.cpp
++++ b/nightly/client/core/hxplay.cpp
+@@ -3505,7 +3505,7 @@ HXPlayer::CheckForAudioResume(UINT32 &ulSchedulerFlags)
+         // 
+         // Source is notified the start of playback so that startup performance figures
+         // can be collected and saved to the logs
+-        if (HXLoggingEnabled())
++        if (TRUE/*HXLoggingEnabled()*/)
+         {
+             CHXMapPtrToPtr::Iterator ndxSource = m_pSourceMap->Begin();
+             for (;  ndxSource != m_pSourceMap->End(); ++ndxSource)
+diff --git a/nightly/client/core/sinkctl.cpp b/nightly/client/core/sinkctl.cpp
+index a0ee5f0..86ece1d 100755
+--- a/nightly/client/core/sinkctl.cpp
++++ b/nightly/client/core/sinkctl.cpp
+@@ -1363,16 +1363,16 @@ STDMETHODIMP CHXErrorSinkTranslator::ErrorOccurred(const UINT8   unSeverity,
+         switch (eLevel)
+         {
+             case LC_CLIENT_LEVEL1:
+-                HXLog1(eFourCC, "%s", pUserString);
++                //HXLog1(eFourCC, "%s", pUserString);
+                 break;
+             case LC_CLIENT_LEVEL2:
+-                HXLog2(eFourCC, "%s", pUserString);
++                //HXLog2(eFourCC, "%s", pUserString);
+                 break;
+             case LC_CLIENT_LEVEL3:
+-                HXLog3(eFourCC, "%s", pUserString);
++                //HXLog3(eFourCC, "%s", pUserString);
+                 break;
+             case LC_CLIENT_LEVEL4:
+-                HXLog4(eFourCC, "%s", pUserString);
++                //HXLog4(eFourCC, "%s", pUserString);
+                 break;
+             case LC_APP_DIAG:
+                 break;
+diff --git a/nightly/common/include/platform.h b/nightly/common/include/platform.h
+index 2795c56..ddb4d5a 100755
+--- a/nightly/common/include/platform.h
++++ b/nightly/common/include/platform.h
+@@ -50,6 +50,6 @@
+ #ifndef _PLATFORM_H_
+ #define _PLATFORM_H_
+ 
+-#define TARVER_STR_PLATFORM "linux-2.6-glibc23-i386"
++#define TARVER_STR_PLATFORM "linux-2.2-libc6-gcc32-i586"
+ #define TARVER_STR_BUILD_BRANCH "hxclient_3_6_1_atlas_restricted"
+ #endif
+diff --git a/nightly/common/log/logutil/hxloghelper.cpp b/nightly/common/log/logutil/hxloghelper.cpp
+index f754bd5..13a18e3 100755
+--- a/nightly/common/log/logutil/hxloghelper.cpp
++++ b/nightly/common/log/logutil/hxloghelper.cpp
+@@ -51,11 +51,13 @@
+ #include "hlxclib/string.h"
+ #include "hlxclib/stdio.h"
+ 
++/*
+ #ifndef ANDROID
+ extern IHXTInternalLogWriter* g_pLogWriter;
+ #else
+ extern IHXTInternalLogWriter* g_pLogWriter = NULL;
+ #endif
++*/
+ 
+ UINT32 GetMaxPropertyNameLength(IHXValues* pHdr)
+ {
+@@ -110,6 +112,7 @@ UINT32 GetMaxPropertyNameLength(IHXValues* pHdr)
+ 
+ void HXLogHdrProp(EHXTLogCode eLogCode, EHXTLogFuncArea nFuncArea, const char* szMsg, ...)
+ {
++	/*
+     if(g_pLogWriter && g_pLogWriter->IsEnabled())
+     {
+         va_list VariableArguments;
+@@ -117,6 +120,7 @@ void HXLogHdrProp(EHXTLogCode eLogCode, EHXTLogFuncArea nFuncArea, const char* s
+         g_pLogWriter->LogMessage("RealNetworks", eLogCode, nFuncArea, MAX_UINT32, szMsg, VariableArguments);
+         va_end(VariableArguments);
+     }
++    */
+ }
+ 
+ void HXLogHeader(EHXTLogCode eLogCode, EHXTLogFuncArea nFuncArea, const char* pszHdrName, IHXValues* pHdr)
+diff --git a/nightly/common/log/logutil/hxtlogutil.cpp b/nightly/common/log/logutil/hxtlogutil.cpp
+index 5acbdde..25b51e6 100755
+--- a/nightly/common/log/logutil/hxtlogutil.cpp
++++ b/nightly/common/log/logutil/hxtlogutil.cpp
+@@ -41,6 +41,7 @@
+ #include "hlxclib/stdarg.h"
+ #include "hxplugn.h"
+ #include "hxassert.h"
++#define HELIX_CONFIG_LOGGING_USE_FPRINTF
+ 
+ #ifndef ANDROID
+ #if defined(HELIX_CONFIG_LOGGING_USE_FPRINTF)
+diff --git a/nightly/common/log/logutil/pub/hxtlogutil.h b/nightly/common/log/logutil/pub/hxtlogutil.h
+index 9c687fa..5835ce9 100755
+--- a/nightly/common/log/logutil/pub/hxtlogutil.h
++++ b/nightly/common/log/logutil/pub/hxtlogutil.h
+@@ -45,6 +45,9 @@
+  #include "android.h"
+ #else
+ 
++#define HELIX_CONFIG_LOGGING_USE_FPRINTF
++#define HELIX_FEATURE_LOGLEVEL_3
++
+ #if defined(HELIX_CONFIG_LOGGING_USE_FPRINTF)
+ 
+ // HELIX_CONFIG_LOGGING_USE_FPRINTF is used when we
+diff --git a/nightly/common/netio/platform/unix/usockio.cpp b/nightly/common/netio/platform/unix/usockio.cpp
+index b5c804b..9de5bc4 100755
+--- a/nightly/common/netio/platform/unix/usockio.cpp
++++ b/nightly/common/netio/platform/unix/usockio.cpp
+@@ -164,7 +164,7 @@ SocketIO::connect(char* host, INT16 port)
+ 	return -1;
+     }
+     struct sockaddr_in addr;
+-    SocketIO::create_address(addr, host, port);
++    //SocketIO::create_address(addr, host, port);
+     INT32 ret = ::connect(sock, (sockaddr*)&addr, sizeof addr);
+     if (ret < 0)
+ 	err = errno;
